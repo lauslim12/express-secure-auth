@@ -49,6 +49,7 @@ Redis is used for this experiment.
 
 - Simple API: registration, logging in, CRUD operations on users.
 - Complete with general SE practices: error handling, graceful shutdown, code documentation, clean architecture, etc.
+- Complete with API loggers.
 - Secure API that checks for almost all errors and handles them accordingly.
 - API will always validate inputs from the request body if applicable.
 - A simple RBAC: a logged in user can perform create, update, and delete operations.
