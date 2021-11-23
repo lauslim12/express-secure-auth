@@ -43,7 +43,7 @@ Redis is used for this experiment.
 - `users` is a set to keep track of all users.
 - `user:{id}` is a hash to store the data of a user.
 - `username-uid` is a hash to keep track of unique keys - a linkage between `username` and `userId`.
-- `sessionKey` is a key value type in order to keep track of sessions. Key is a randomly generated session key, and the value is the user identification. Has an expiry time of 24 hours, same as the expiry time of the JWT.
+- `sess:{sessionKey}` is a key value type in order to keep track of sessions. Key is a randomly generated session key, and the value is the user identification (user ID). Has an expiry time of 24 hours, same as the expiry time of the JWT.
 
 ## Features
 
