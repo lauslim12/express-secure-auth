@@ -1,0 +1,31 @@
+version: '3.9'
+services:
+  express-secure-auth:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    ports:
+      - 8080:8080
+    networks:
+      - backend
+    depends_on:
+      - redis
+    environment:
+      - NODE_ENV=production
+      - JWT_SECRET=randomstringusedtohashthejwtsoitdoesnotgetspoofedbypeople,replacethisstringassoonasyouhavetimeorifyouwanttousethisexperimentinproductionenvironment.
+      - PASSWORD_HASH=bcrypt
+      - PASSWORD_SALT=randomstringforsha512hash.wedonotwantanyonetoknowthis.youareseeingthisasthisisopensource.ifyouwanttousethisinproductionenvironment,donotusethis.
+    command: yarn start
+
+  redis:
+    image: redis:6.2.5
+    restart: always
+    ports:
+      - 6379:6379
+    networks:
+      - backend
+
+networks:
+  backend:
