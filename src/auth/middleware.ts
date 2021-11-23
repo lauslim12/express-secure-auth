@@ -20,10 +20,10 @@ const authLoginSchema = joi.object({
  * Schema type for registration.
  */
 const authRegistrationSchema = joi.object({
-  username: joi.string().required(),
-  password: joi.string().required(),
-  name: joi.string().required(),
-  address: joi.string().required(),
+  username: joi.string().trim().alphanum().required(),
+  password: joi.string().min(8).max(25).required(),
+  name: joi.string().alphanum().trim().required(),
+  address: joi.string().trim().required(),
 });
 
 /**
