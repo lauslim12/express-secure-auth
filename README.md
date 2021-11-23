@@ -163,3 +163,8 @@ From this experiment, I conclude:
 
 - Try to explore more password algorithms.
 - Create more unit tests.
+
+## References
+
+- [RFC 7519 (JSON Web Tokens)](https://datatracker.ietf.org/doc/html/rfc7519)
+- Other online documentations.
