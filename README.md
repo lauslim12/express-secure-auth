@@ -13,8 +13,21 @@ The API itself is pretty straightforward and divided into several user stories.
 - A user should be able to register and login.
 - A logged in user should be able to perform CRUD operations on any other users.
 - A non logged user should be able to get all data of users, and get a single data of a user.
+- A user should receive a secure JWT token with session key once they have successfully logged in.
 - A user can only access sensitive endpoints limited by rate limiters.
 - A user can access general endpoints limited by rate limiters.
+
+Endpoints existing in this API:
+
+- `GET /`, a greeting message.
+- `POST /api/v1/authentication/login`, to log in a single user.
+- `POST /api/v1/authentication/register`, to register as a single user.
+- `POST /api/v1/authentication/logout`, to log out. You need to be logged in to access this endpoint.
+- `GET /api/v1/users`, to get all users.
+- `GET /api/v1/users/<username>`, to get a user.
+- `POST /api/v1/users`, to create a single user. You need to be logged in to access this endpoint.
+- `PUT /api/v1/users/<uid>`, to update a single user. You need to be logged in to access this endpoint.
+- `DELETE /api/v1/users/<uid>`, to delete a single user. You need to be logged in to access this endpoint.
 
 ## Authentication Flow
 
@@ -25,6 +38,20 @@ The API itself is pretty straightforward and divided into several user stories.
 ### Middleware
 
 ![Middleware Flowchart](./assets/middleware-flow.png)
+
+## Attack Vectors
+
+This API will prevent:
+
+- CSRF, as this API does not accept cookies. This API only accepts `Authorization` header with `Bearer` realm.
+- MITM, if this API is run on HTTPS with a secure SSL/TLS.
+- Brute-force attacks is prevented, as this API uses a strict rate-limiter with Redis.
+- Session hijacking, as this API uses a strict session token generation algorithm (JWT with strict claims and NanoID). All of the session data are stored in the server-side.
+- Injection, as Redis is not an SQL and it has no concept of string escaping. The protocol uses prefixed-length strings and is completely binary safe.
+
+Technically, DDoS-ing and stuff may still work, but the rate limiter will prevent it to the best of its ability. Guessing passwords is still possible but outright impossible, as passwords are hashed with either BCRYPT algorithm with 14 rounds or HMAC-SHA512 with a strong secret. To try to brute-force itself would be outright impossible as the API implements strict rate-limiters (unless you are using a large botnet whose IPs originate from different countries, which is a federal crime if you're installing malwares in other people's machine).
+
+All of the attack vectors are considered according to OWASP Top 10 2021 and OWASP Top 10 (API Security).
 
 ## Prerequisites
 
@@ -105,6 +132,8 @@ flushdb
 yarn dev
 ```
 
+- Open the API in `http://localhost:8080` and you're done.
+
 ## Tests
 
 There are three ways to run tests in this application.
@@ -152,7 +181,7 @@ docker image rm express-secure-auth:latest
 
 From this experiment, I conclude:
 
-- JSON Web Tokens can be used as an alternative towards a normal session token for _stateful_ authentication.
+- JSON Web Tokens can be used as an alternative towards a normal session token for **stateful** authentication.
 - `sha512` is much faster than `bcrypt`, but `bcrypt` is quantum-safe and uses modified key algorithms that is cryptographically secure.
 - Checking all JSON Web Tokens's claims (`iat`, `nbf`, `sub`, `iss`, `aud`, `jti`, even extra payload like `sess` in this experiment) can be an effective deterrent for an attacker. Creating a valid JWT token from nothingness is already a hard task by itself. I believe this is somewhat safer than ordinary sessions.
 - Forcing a user to login again after they have changed passwords seemed like a good security measure - also a good choice to refresh tokens.
@@ -167,5 +196,9 @@ From this experiment, I conclude:
 
 ## References
 
+- [OWASP Top 10 2021](https://owasp.org/www-project-top-ten/)
+- [OWASP Top 10 2021: Detail](https://owasp.org/Top10/A00_2021_Introduction/)
+- [OWASP Top 10 API Security](https://owasp.org/www-project-api-security/)
+- [OWASP REST Security: Cheatsheet](https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html)
 - [RFC 7519 (JSON Web Tokens)](https://datatracker.ietf.org/doc/html/rfc7519)
-- Other online documentations.
+- Other compiled online documentations.
