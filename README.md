@@ -173,8 +173,7 @@ sh scripts/test.sh
 - To stop the app and remove any leftovers:
 
 ```bash
-docker-compose rm -v --force --stop
-docker image rm express-secure-auth:latest
+docker-compose down
 ```
 
 ## Results
