@@ -109,6 +109,15 @@ class AuthService implements Service {
   }
 
   /**
+   * Logs out a user.
+   *
+   * @param sessionKey - A user's session key
+   */
+  async logout(sessionKey: string) {
+    await this.authRepository.removeFromSession(sessionKey);
+  }
+
+  /**
    * Inserts a user's data to the session.
    *
    * @param userId - A user's identification

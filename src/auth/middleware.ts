@@ -123,8 +123,9 @@ class AuthMiddleware {
         return;
       }
 
-      // continue next and place 'userid' in request variable
+      // continue next and place 'userid' and 'sessionId' in request variable
       req.userId = loggedUser.id;
+      req.sessionKey = verifiedToken.sess;
       next();
     }
   );

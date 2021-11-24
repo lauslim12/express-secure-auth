@@ -66,6 +66,27 @@ const AuthHandler = (
     })
   );
 
+  /**
+   * Logs out a single user by removing the token from the list of sessions.
+   */
+  handler.post(
+    '/logout',
+    authMiddleware.restrict,
+    asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+      if (!req.sessionKey) {
+        next(new AppError('Session key does not exist!', 400));
+        return;
+      }
+
+      await authService.logout(req.sessionKey);
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Logged out successfully!',
+      });
+    })
+  );
+
   return handler;
 };
 

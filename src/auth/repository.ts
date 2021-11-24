@@ -33,6 +33,15 @@ class AuthRepository implements Repository {
   async getFromSession(sessionKey: string) {
     return await this.redis.get(`sess:${sessionKey}`);
   }
+
+  /**
+   * Removes a session key from the sessions and users mapping.
+   *
+   * @param sessionKey - A session key
+   */
+  async removeFromSession(sessionKey: string) {
+    await this.redis.del(`sess:${sessionKey}`);
+  }
 }
 
 export default AuthRepository;
