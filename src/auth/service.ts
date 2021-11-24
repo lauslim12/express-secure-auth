@@ -122,7 +122,7 @@ class AuthService implements Service {
    * Gets a user's identification mapping from the session.
    *
    * @param sessionKey - A randomly generated session key
-   * @returns User ID if exists.
+   * @returns User ID if exists
    */
   async getFromSession(sessionKey: string) {
     const session = await this.authRepository.getFromSession(sessionKey);

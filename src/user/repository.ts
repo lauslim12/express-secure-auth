@@ -30,7 +30,7 @@ class UserRepository implements Repository {
    * Fetches a single user from the database by identification.
    *
    * @param id - ID of the user
-   * @returns A single user's data
+   * @returns A single user's data or null if it does not exists
    */
   async fetchUser(id: string) {
     const user = await this.redis.hgetall(`user:${id}`);
@@ -45,7 +45,7 @@ class UserRepository implements Repository {
    * Fetches a single user by his/her username.
    *
    * @param username - A user's username
-   * @returns A single user's data
+   * @returns A single user's data or null if it does not exists
    */
   async fetchUserByUsername(username: string) {
     const userId = await this.redis.hget('username-uid', username);
