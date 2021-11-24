@@ -193,6 +193,10 @@ From this experiment, I conclude:
 - Try to explore more password algorithms.
 - Create more unit tests.
 
+## License
+
+This application is licensed under MIT License.
+
 ## References
 
 - [OWASP Top 10 2021](https://owasp.org/www-project-top-ten/)
