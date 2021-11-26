@@ -11,7 +11,7 @@ import { pbkdf2 } from 'crypto';
  */
 const createPBKDF2Hash = async (raw: string, salt: string): Promise<string> => {
   return new Promise((resolve, reject) => {
-    pbkdf2(raw.normalize(), salt, 50000, 64, 'sha512', (err, key) => {
+    pbkdf2(raw.normalize(), salt, 1000000, 64, 'sha512', (err, key) => {
       if (err) {
         return reject(err);
       }
