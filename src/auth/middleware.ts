@@ -3,6 +3,7 @@ import joi from 'joi';
 import type { JwtPayload, VerifyOptions } from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 
+import config from '../config';
 import UserService from '../user/service';
 import AppError from '../util/appError';
 import asyncHandler from '../util/asyncHandler';
@@ -22,7 +23,7 @@ const authLoginSchema = joi.object({
 const authRegistrationSchema = joi.object({
   username: joi.string().trim().alphanum().required(),
   password: joi.string().min(8).max(25).required(),
-  name: joi.string().alphanum().trim().required(),
+  name: joi.string().trim().required(),
   address: joi.string().trim().required(),
 });
 
@@ -33,7 +34,6 @@ const authRegistrationSchema = joi.object({
  * @returns The parsed, verified token
  */
 const verifyToken = async (token: string): Promise<JwtPayload> => {
-  const secretKey = process.env.JWT_SECRET || 'replace with something random';
   const options: VerifyOptions = {
     algorithms: ['HS256'],
     audience: 'if673-general-population',
@@ -41,7 +41,7 @@ const verifyToken = async (token: string): Promise<JwtPayload> => {
   };
 
   return new Promise((resolve, reject) => {
-    jwt.verify(token, secretKey, options, (err, decoded) => {
+    jwt.verify(token, config.JWT_SECRET, options, (err, decoded) => {
       if (err) {
         return reject(
           new AppError(
@@ -111,8 +111,9 @@ class AuthMiddleware {
       }
 
       // verify whether the user has recently changed passwords or not
-      const timeChangedPassword =
-        parseInt(loggedUser.changedPasswordAfter, 10) / 1000;
+      const timeChangedPassword = Math.floor(
+        parseInt(loggedUser.changedPasswordAfter, 10) / 1000
+      );
       if (timeChangedPassword > verifiedToken.iat) {
         next(
           new AppError(

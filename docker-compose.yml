@@ -13,10 +13,11 @@ services:
     depends_on:
       - redis
     environment:
-      - NODE_ENV=production
       - JWT_SECRET=randomstringusedtohashthejwtsoitdoesnotgetspoofedbypeople,replacethisstringassoonasyouhavetimeorifyouwanttousethisexperimentinproductionenvironment.
-      - PASSWORD_HASH=bcrypt
-      - PASSWORD_SALT=randomstringforsha512hash.wedonotwantanyonetoknowthis.youareseeingthisasthisisopensource.ifyouwanttousethisinproductionenvironment,donotusethis.
+      - NODE_ENV=production
+      - PASSWORD_ALGORITHM=argon2
+      - PASSWORD_PEEPER=randomstringforsha512hash.wedonotwantanyonetoknowthis.youareseeingthisasthisisopensource.ifyouwanttousethisinproductionenvironment,donotusethis.
+      - PORT=8080
     command: yarn start
 
   redis:

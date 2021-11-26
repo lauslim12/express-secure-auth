@@ -1,9 +1,14 @@
-import bcrypt from 'bcrypt';
-import crypto from 'crypto';
 import type { JwtPayload, SignOptions } from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 import { nanoid } from 'nanoid/async';
 
+import config from '../config';
+import { verifyArgon2Hash } from '../crypto/argon2';
+import { verifyBCRYPTHash } from '../crypto/bcrypt';
+import createPBKDF2Hash from '../crypto/pbkdf2';
+import safeCompare from '../crypto/safeCompare';
+import createSCRYPTHash from '../crypto/scrypt';
+import createSHA512HMAC from '../crypto/sha512';
 import type { Repository as UserRepo } from '../user/domain';
 import type { Auth, Repository as AuthRepo, Service } from './domain';
 
@@ -19,8 +24,6 @@ const generateJWT = async (
   username: string,
   sessionKey: string
 ): Promise<string> => {
-  const secretKey = process.env.JWT_SECRET || 'replace with something random';
-
   const options: SignOptions = {
     algorithm: 'HS256',
     audience: 'if673-general-population',
@@ -35,7 +38,7 @@ const generateJWT = async (
   };
 
   return new Promise((resolve, reject) => {
-    jwt.sign(payload, secretKey, options, (err, decoded) => {
+    jwt.sign(payload, config.JWT_SECRET, options, (err, decoded) => {
       if (err) {
         return reject(err);
       }
@@ -47,6 +50,82 @@ const generateJWT = async (
       return resolve(decoded);
     });
   });
+};
+
+/**
+ * Compares passwords that have no need for manual salt.
+ *
+ * @param checked - A password from the database
+ * @param input - A password from the user
+ * @returns Boolean value whether passwords match or not
+ */
+const compareAutoSaltPasswords = async (checked: string, input: string) => {
+  if (config.PASSWORD_ALGORITHM === 'argon2') {
+    return await verifyArgon2Hash(checked, input);
+  }
+
+  return await verifyBCRYPTHash(checked, input);
+};
+
+/**
+ * Compares passwords that have to have manual salt.
+ * For manual salts, we have to create a representation of that password in the form of the algorithm.
+ * After that, we can compare.
+ *
+ * @param checked - A password from the database
+ * @param input - A password from the user
+ * @param salt - A salt from the database
+ * @returns Boolean value whether passwords match or not
+ */
+const compareManualSaltPasswords = async (
+  checked: string,
+  input: string,
+  salt: string
+) => {
+  if (config.PASSWORD_ALGORITHM === 'pbkdf2') {
+    const userInput = await createPBKDF2Hash(input, salt);
+    const isPasswordValid = safeCompare(userInput, checked);
+    if (isPasswordValid) {
+      return true;
+    }
+
+    return false;
+  }
+
+  if (config.PASSWORD_ALGORITHM === 'scrypt') {
+    const userInput = await createSCRYPTHash(input, salt);
+    const isPasswordValid = safeCompare(userInput, checked);
+    if (isPasswordValid) {
+      return true;
+    }
+
+    return false;
+  }
+
+  // compare sha512
+  const passwordInput = createSHA512HMAC(input, salt);
+  return safeCompare(checked, passwordInput);
+};
+
+/**
+ * Compares whether passwords match or not depending on the current used algorithm.
+ *
+ * @param checked - A password from the database
+ * @param input - A password from the user
+ * @param salt - A salt from the database
+ * @returns Boolean value whether passwords match or not
+ */
+const comparePasswords = async (
+  checked: string,
+  input: string,
+  salt: string
+) => {
+  const { PASSWORD_ALGORITHM } = config;
+  if (PASSWORD_ALGORITHM === 'argon2' || PASSWORD_ALGORITHM === 'bcrypt') {
+    return await compareAutoSaltPasswords(checked, input);
+  }
+
+  return await compareManualSaltPasswords(checked, input, salt);
 };
 
 /**
@@ -76,25 +155,14 @@ class AuthService implements Service {
       return null;
     }
 
-    // check whether passwords are in sync
-    if (process.env.PASSWORD_HASH === 'sha512' && process.env.PASSWORD_SALT) {
-      const processedPassword = crypto
-        .createHmac('sha512', process.env.PASSWORD_SALT)
-        .update(auth.password)
-        .digest('hex');
-
-      if (
-        !crypto.timingSafeEqual(
-          Buffer.from(processedPassword),
-          Buffer.from(checkedUser.password)
-        )
-      ) {
-        return null;
-      }
-    } else {
-      if (!(await bcrypt.compare(auth.password, checkedUser.password))) {
-        return null;
-      }
+    // check whether passwords match safely
+    const isPasswordCorrect = await comparePasswords(
+      checkedUser.password,
+      auth.password,
+      checkedUser.salt
+    );
+    if (!isPasswordCorrect) {
+      return null;
     }
 
     // generate token and unique session key

@@ -7,8 +7,8 @@ main() {
 
   # Simulate registration.
   echo "Simulating registration..."
-  curl -H "Content-Type: application/json" -X POST -d '{"username":"sayu","password":"123","name":"Sayu Ogiwara","address":"Hokkaido, Japan"}' "$AUTH_API_URL/register" | json_pp; echo;
-  curl -H "Content-Type: application/json" -X POST -d '{"username":"kaede","password":"123","name":"Kaede Kimura","address":"Setagaya, Tokyo"}' "$AUTH_API_URL/register" | json_pp; echo;
+  curl -H "Content-Type: application/json" -X POST -d '{"username":"sayu","password":"abcdEFGH12345","name":"Sayu Ogiwara","address":"Hokkaido, Japan"}' "$AUTH_API_URL/register" | json_pp; echo;
+  curl -H "Content-Type: application/json" -X POST -d '{"username":"kaede","password":"abcdEFGH12345","name":"Kaede Kimura","address":"Setagaya, Tokyo"}' "$AUTH_API_URL/register" | json_pp; echo;
   echo
 
   # Simulate get recently created user.
@@ -18,7 +18,7 @@ main() {
 
   # Simulate login.
   echo "Simulating login..."
-  TOKEN=$(curl -H "Content-Type: application/json" -X POST -d '{"username":"kaede","password":"123"}' "$AUTH_API_URL/login" | jq -r '.token'); echo
+  TOKEN=$(curl -H "Content-Type: application/json" -X POST -d '{"username":"kaede","password":"abcdEFGH12345"}' "$AUTH_API_URL/login" | jq -r '.token'); echo
   echo
 
   # Simulate get all users.
@@ -31,9 +31,12 @@ main() {
   curl -X GET "$USER_API_URL/kaede" | json_pp; echo;
   echo
 
+  # Sleep for several seconds to prevent 'recently changed passwords' (computer is just too fast).
+  sleep 2;
+
   # Simulates data adding without registration.
   echo "Simulating creating data without registration..."
-  FUJIWARA_ID=$(curl -H "Authorization: Bearer ${TOKEN}" -H "Content-Type: application/json" -X POST -d '{"username":"fujiwara","password":"123","name":"Chika Fujiwara","address":"Kanazawa, Japan"}' $USER_API_URL | jq -r '.data.id')
+  FUJIWARA_ID=$(curl -H "Authorization: Bearer ${TOKEN}" -H "Content-Type: application/json" -X POST -d '{"username":"fujiwara","password":"abcdEFGH12345","name":"Chika Fujiwara","address":"Kanazawa, Japan"}' $USER_API_URL | jq -r '.data.id')
   echo $FUJIWARA_ID
 
   # Simulates data updates.

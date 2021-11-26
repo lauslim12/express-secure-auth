@@ -2,9 +2,11 @@ declare global {
   namespace NodeJS {
     interface ProcessEnv {
       JWT_SECRET?: string;
-      PASSWORD_HASH?: 'bcrypt' | 'sha512';
-      PASSWORD_SALT?: string;
       NODE_ENV?: 'production' | 'development';
+      PASSWORD_ALGORITHM?: 'bcrypt' | 'sha512' | 'scrypt' | 'argon2' | 'pbkdf2';
+      PASSWORD_PEEPER?: string;
+      PORT?: number;
+      SESSION_SECRET?: string;
     }
   }
 
