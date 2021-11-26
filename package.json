@@ -19,6 +19,7 @@
     "lint": "yarn format-check && yarn eslint-check && yarn type-check"
   },
   "dependencies": {
+    "argon2": "^0.28.3",
     "bcrypt": "^5.0.1",
     "compression": "^1.7.4",
     "express": "^4.17.1",
