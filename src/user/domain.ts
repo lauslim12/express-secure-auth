@@ -5,6 +5,7 @@ export type User = {
   id: string;
   username: string;
   password: string;
+  salt: string;
   name: string;
   address: string;
   changedPasswordAfter: string;
@@ -15,7 +16,7 @@ export type User = {
 /**
  * Representation of a stripped user object.
  */
-type UserResponse = Omit<User, 'password'>;
+type UserResponse = Omit<User, 'password' | 'salt'>;
 
 /**
  * All business logic of this 'User' entity.
