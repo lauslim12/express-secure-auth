@@ -24,8 +24,6 @@ const generateJWT = async (
   username: string,
   sessionKey: string
 ): Promise<string> => {
-  const secretKey = process.env.JWT_SECRET || 'replace with something random';
-
   const options: SignOptions = {
     algorithm: 'HS256',
     audience: 'if673-general-population',
@@ -40,7 +38,7 @@ const generateJWT = async (
   };
 
   return new Promise((resolve, reject) => {
-    jwt.sign(payload, secretKey, options, (err, decoded) => {
+    jwt.sign(payload, config.JWT_SECRET, options, (err, decoded) => {
       if (err) {
         return reject(err);
       }

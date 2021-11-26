@@ -1,12 +1,14 @@
 import { createNodeRedisClient } from 'handy-redis';
 
+import config from '../config';
+
 /**
  * Creates a Redis instance to be used by the application.
  *
  * @returns Redis instance
  */
 const redis = createNodeRedisClient({
-  host: process.env.NODE_ENV === 'production' ? 'redis' : 'localhost',
+  host: config.NODE_ENV === 'production' ? 'redis' : 'localhost',
 });
 
 /**
