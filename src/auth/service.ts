@@ -115,13 +115,17 @@ const compareManualSaltPasswords = async (
  * @param salt - A salt from the database
  * @returns Boolean value whether passwords match or not
  */
-const comparePasswords = (checked: string, input: string, salt: string) => {
+const comparePasswords = async (
+  checked: string,
+  input: string,
+  salt: string
+) => {
   const { PASSWORD_ALGORITHM } = config;
   if (PASSWORD_ALGORITHM === 'argon2' || PASSWORD_ALGORITHM === 'bcrypt') {
-    return compareAutoSaltPasswords(checked, input);
+    return await compareAutoSaltPasswords(checked, input);
   }
 
-  return compareManualSaltPasswords(checked, input, salt);
+  return await compareManualSaltPasswords(checked, input, salt);
 };
 
 /**
@@ -152,7 +156,7 @@ class AuthService implements Service {
     }
 
     // check whether passwords match safely
-    const isPasswordCorrect = comparePasswords(
+    const isPasswordCorrect = await comparePasswords(
       checkedUser.password,
       auth.password,
       checkedUser.salt
