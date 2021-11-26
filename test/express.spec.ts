@@ -25,7 +25,7 @@ describe('Authentication route tests', function () {
       .post('/api/v1/authentication/register')
       .send({
         username: 'kaede',
-        password: '123',
+        password: 'abcdeEF1234579',
         name: 'Kaede Kimura',
         address: 'Tokyo, Japan',
       })
@@ -42,7 +42,7 @@ describe('Authentication route tests', function () {
   it('POST /api/v1/authentication/login', function (done) {
     request(app)
       .post('/api/v1/authentication/login')
-      .send({ username: 'kaede', password: '123' })
+      .send({ username: 'kaede', password: 'abcdeEF1234579' })
       .expect(200)
       .then(() => done())
       .catch((err) => done(err));
@@ -75,7 +75,7 @@ describe('User route tests', function () {
 
     const res = await request(app)
       .post('/api/v1/authentication/login')
-      .send({ username: 'kaede', password: '123' })
+      .send({ username: 'kaede', password: 'abcdeEF1234579' })
       .expect(200);
 
     const newUser = await request(app)
@@ -83,7 +83,7 @@ describe('User route tests', function () {
       .set('Authorization', `Bearer ${res.body.token}`)
       .send({
         username: 'sayu',
-        password: '123',
+        password: 'abcdeEF1234579',
         name: 'Sayu Ogiwara',
         address: 'Hokkaido, Japan',
       })
@@ -98,7 +98,7 @@ describe('User route tests', function () {
 
     const res = await request(app)
       .post('/api/v1/authentication/login')
-      .send({ username: 'kaede', password: '123' })
+      .send({ username: 'kaede', password: 'abcdeEF1234579' })
       .expect(200);
 
     const kaede = await request(app).get('/api/v1/users/kaede').expect(200);
@@ -108,7 +108,6 @@ describe('User route tests', function () {
       .set('Authorization', `Bearer ${res.body.token}`)
       .send({
         username: 'mai',
-        password: '123',
         name: 'Mai Sakurajima',
         address: 'Fujisawa, Japan',
       })
@@ -124,7 +123,7 @@ describe('User route tests', function () {
 
     const res = await request(app)
       .post('/api/v1/authentication/login')
-      .send({ username: 'mai', password: '123' })
+      .send({ username: 'mai', password: 'abcdeEF1234579' })
       .expect(200);
 
     const mai = await request(app).get('/api/v1/users/mai').expect(200);
