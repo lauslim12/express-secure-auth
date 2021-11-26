@@ -8,21 +8,19 @@ import { createHash, randomBytes } from 'crypto';
  * @param peeper - A secret string to be appended to the salt
  * @returns A secure-random salt for passwords
  */
-const genSalt = async (size: number, peeper: string) => {
-  const salt = randomBytes(size, (err, buf) => {
-    return new Promise((resolve, reject) => {
+const genSalt = async (size: number, peeper: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    randomBytes(size, (err, buf) => {
       if (err) {
         return reject(err);
       }
 
-      return resolve(buf.toString('hex'));
+      const saltAndPeeper = `${peeper}${buf.toString('hex')}`;
+      const hashedSP = createHash('sha512').update(saltAndPeeper).digest('hex');
+
+      return resolve(hashedSP);
     });
   });
-
-  const saltAndPeeper = `${peeper}${salt}`;
-  const hashedSalt = createHash('sha512').update(saltAndPeeper).digest('hex');
-
-  return hashedSalt;
 };
 
 export default genSalt;
