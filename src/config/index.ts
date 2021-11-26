@@ -7,7 +7,6 @@ const config = {
   PASSWORD_ALGORITHM: process.env.PASSWORD_ALGORITHM || 'argon2',
   PASSWORD_PEEPER: process.env.PASSWORD_PEEPER || 'randompeeper',
   PORT: process.env.PORT || 8080,
-  SESSION_SECRET: process.env.SESSION_SECRET || 'randomsession',
 };
 
 export default config;

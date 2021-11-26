@@ -18,7 +18,6 @@ services:
       - PASSWORD_ALGORITHM=argon2
       - PASSWORD_PEEPER=randomstringforsha512hash.wedonotwantanyonetoknowthis.youareseeingthisasthisisopensource.ifyouwanttousethisinproductionenvironment,donotusethis.
       - PORT=8080
-      - SESSION_SECRET=randomstringthatisusedtodeclaresessionsecrettocreatesignedsessiontokens.pleasereplacethisvalueinproductionifyouwanttousethisinyourcompanyorsomething.
     command: yarn start
 
   redis:
