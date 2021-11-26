@@ -2,6 +2,7 @@ import compression from 'compression';
 import type { Application, NextFunction, Request, Response } from 'express';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
+import slowDown from 'express-slow-down';
 import type { WrappedNodeRedisClient } from 'handy-redis';
 import helmet from 'helmet';
 import hpp from 'hpp';
@@ -56,6 +57,17 @@ const loadExpress = (app: Application, redis: WrappedNodeRedisClient) => {
     next();
   });
 
+  // Set up throttling to prevent spam requests.
+  const throttler = slowDown({
+    store: new RedisStore({
+      client: redis.nodeRedis,
+      prefix: 'sd-common',
+    }),
+    windowMs: 15 * 60 * 1000,
+    delayAfter: 25,
+    delayMs: 200,
+  });
+
   // Set up general limiter.
   const limiter = rateLimit({
     store: new RedisStore({
@@ -105,7 +117,8 @@ const loadExpress = (app: Application, redis: WrappedNodeRedisClient) => {
   const userHandler = UserHandler(userService, authMiddleware, userMiddleware);
 
   // Define API routes.
-  app.use('/', limiter, miscHandler);
+  app.use(throttler);
+  app.use('/', miscHandler);
   app.use('/api/v1/authentication', strictLimiter, authHandler);
   app.use('/api/v1/users', limiter, userHandler);
 
