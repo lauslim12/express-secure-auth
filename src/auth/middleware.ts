@@ -22,7 +22,7 @@ const authLoginSchema = joi.object({
 const authRegistrationSchema = joi.object({
   username: joi.string().trim().alphanum().required(),
   password: joi.string().min(8).max(25).required(),
-  name: joi.string().alphanum().trim().required(),
+  name: joi.string().trim().required(),
   address: joi.string().trim().required(),
 });
 
@@ -111,8 +111,9 @@ class AuthMiddleware {
       }
 
       // verify whether the user has recently changed passwords or not
-      const timeChangedPassword =
-        parseInt(loggedUser.changedPasswordAfter, 10) / 1000;
+      const timeChangedPassword = Math.floor(
+        parseInt(loggedUser.changedPasswordAfter, 10) / 1000
+      );
       if (timeChangedPassword > verifiedToken.iat) {
         next(
           new AppError(

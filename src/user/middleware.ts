@@ -10,7 +10,7 @@ import asyncHandler from '../util/asyncHandler';
 const userCreateSchema = joi.object({
   username: joi.string().trim().alphanum().required(),
   password: joi.string().min(8).max(25).required(),
-  name: joi.string().alphanum().trim().required(),
+  name: joi.string().trim().required(),
   address: joi.string().trim().required(),
 });
 
@@ -20,7 +20,7 @@ const userCreateSchema = joi.object({
 const userUpdateSchema = joi.object({
   username: joi.string().trim().alphanum(),
   password: joi.string().min(8).max(25),
-  name: joi.string().alphanum().trim(),
+  name: joi.string().trim(),
   address: joi.string().trim(),
 });
 
