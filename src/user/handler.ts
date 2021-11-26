@@ -63,7 +63,12 @@ const UserHandler = (
     '/',
     authMiddleware.restrict,
     userMiddleware.validateCreate,
-    asyncHandler(async (req: Request, res: Response) => {
+    asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+      if (await userService.getUserByUsername(req.body.username)) {
+        next(new AppError('That username has been registered already!', 400));
+        return;
+      }
+
       const newUser = await userService.createUser(req.body);
 
       res.status(201).json({
