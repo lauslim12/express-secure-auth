@@ -16,7 +16,7 @@ export type User = {
 /**
  * Representation of a stripped user object.
  */
-type UserResponse = Omit<User, 'password' | 'salt'>;
+type UserResponse = Omit<User, 'password' | 'salt' | 'changedPasswordAfter'>;
 
 /**
  * All business logic of this 'User' entity.
@@ -25,6 +25,7 @@ export interface Service {
   getUsers: () => Promise<UserResponse[]>;
   getUser: (id: string) => Promise<UserResponse | null>;
   getUserByUsername: (username: string) => Promise<UserResponse | null>;
+  getUserComplete: (id: string) => Promise<User | null>;
   createUser: (user: User) => Promise<UserResponse>;
   modifyUser: (id: string, user: Partial<User>) => Promise<UserResponse>;
   removeUser: (id: string) => Promise<void>;

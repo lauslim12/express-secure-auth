@@ -104,7 +104,7 @@ class AuthMiddleware {
       }
 
       // verify whether the user with the previously retrieved user id exists or not
-      const loggedUser = await this.userService.getUser(userId);
+      const loggedUser = await this.userService.getUserComplete(userId);
       if (!loggedUser) {
         next(new AppError('User bearing this JWT token does not exist!', 401));
         return;

@@ -61,6 +61,7 @@ class UserService implements Service {
       ...user,
       password: undefined,
       salt: undefined,
+      changedPasswordAfter: undefined,
     }));
 
     return strippedUsers;
@@ -78,7 +79,12 @@ class UserService implements Service {
       return null;
     }
 
-    return { ...user, password: undefined, salt: undefined };
+    return {
+      ...user,
+      password: undefined,
+      salt: undefined,
+      changedPasswordAfter: undefined,
+    };
   }
 
   /**
@@ -93,7 +99,27 @@ class UserService implements Service {
       return null;
     }
 
-    return { ...user, password: undefined, salt: undefined };
+    return {
+      ...user,
+      password: undefined,
+      salt: undefined,
+      changedPasswordAfter: undefined,
+    };
+  }
+
+  /**
+   * Returns a user's complete data.
+   *
+   * @param id - A user's ID
+   * @returns A user, their complete data
+   */
+  async getUserComplete(id: string) {
+    const user = await this.userRepository.fetchUser(id);
+    if (!user) {
+      return null;
+    }
+
+    return user;
   }
 
   /**
@@ -112,7 +138,12 @@ class UserService implements Service {
 
     const newUser = await this.userRepository.insertUser(user);
 
-    return { ...newUser, password: undefined, salt: undefined };
+    return {
+      ...newUser,
+      password: undefined,
+      salt: undefined,
+      changedPasswordAfter: undefined,
+    };
   }
 
   /**
@@ -132,7 +163,12 @@ class UserService implements Service {
     user.updated = Date.now().toString();
     const updatedUser = await this.userRepository.updateUser(id, user);
 
-    return { ...updatedUser, password: undefined, salt: undefined };
+    return {
+      ...updatedUser,
+      password: undefined,
+      salt: undefined,
+      changedPasswordAfter: undefined,
+    };
   }
 
   /**
