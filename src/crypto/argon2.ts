@@ -7,7 +7,7 @@ import argon2 from 'argon2';
  * @returns A hashed Argon2 password
  */
 export const createArgon2Hash = async (raw: string) => {
-  return await argon2.hash(raw.normalize(), { timeCost: 250 });
+  return await argon2.hash(raw.normalize(), { timeCost: 300, hashLength: 50 });
 };
 
 /**
@@ -18,5 +18,8 @@ export const createArgon2Hash = async (raw: string) => {
  * @returns Boolean value whether the hash is correct or not
  */
 export const verifyArgon2Hash = async (checked: string, input: string) => {
-  return await argon2.verify(checked, input.normalize(), { timeCost: 250 });
+  return await argon2.verify(checked, input.normalize(), {
+    timeCost: 300,
+    hashLength: 50,
+  });
 };
