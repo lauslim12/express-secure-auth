@@ -133,12 +133,14 @@ const loadExpress = (app: Application, redis: WrappedNodeRedisClient) => {
       err.message = 'Invalid JSON! Please insert a valid one.';
       err.statusCode = 400;
       err.isOperational = true;
+      err.status = 'fail';
     }
 
     if (err.type === 'entity.too.large') {
       err.message = 'Request body is too large! Please insert a smaller one.';
       err.statusCode = 413;
       err.isOperational = true;
+      err.status = 'fail';
     }
 
     if (err.isOperational) {
