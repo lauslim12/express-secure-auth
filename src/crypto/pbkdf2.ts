@@ -20,8 +20,8 @@ export const createPBKDF2Hash = async (
   digest: string,
   iterations: number,
   keyLength: number
-): Promise<string> => {
-  return new Promise((resolve, reject) => {
+): Promise<string> =>
+  new Promise((resolve, reject) => {
     pbkdf2(raw.normalize(), salt, iterations, keyLength, digest, (err, key) => {
       if (err) {
         return reject(err);
@@ -32,7 +32,6 @@ export const createPBKDF2Hash = async (
       return resolve(kdf);
     });
   });
-};
 
 /**
  * Verifies whether strings match or not.

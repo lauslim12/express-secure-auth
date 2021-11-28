@@ -14,8 +14,8 @@ export const createSCRYPTHash = async (
   raw: string,
   salt: string,
   keyLength: number
-): Promise<string> => {
-  return new Promise((resolve, reject) => {
+): Promise<string> =>
+  new Promise((resolve, reject) => {
     scrypt(raw.normalize(), salt, keyLength, (err, key) => {
       if (err) {
         return reject(err);
@@ -26,7 +26,6 @@ export const createSCRYPTHash = async (
       return resolve(kdf);
     });
   });
-};
 
 /**
  * Verifies SCRYPT hash with the input.
