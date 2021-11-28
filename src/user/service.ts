@@ -129,14 +129,16 @@ class UserService implements Service {
    * @returns A single newly created user
    */
   async createUser(user: User) {
-    user.id = await nanoid();
-    user.salt = await genSalt(24, config.PASSWORD_PEEPER);
-    user.password = await generatePassword(user.password, user.salt);
-    user.changedPasswordAfter = Date.now().toString();
-    user.created = Date.now().toString();
-    user.updated = Date.now().toString();
+    const u = { ...user };
 
-    const newUser = await this.userRepository.insertUser(user);
+    u.id = await nanoid();
+    u.salt = await genSalt(24, config.PASSWORD_PEEPER);
+    u.password = await generatePassword(user.password, user.salt);
+    u.changedPasswordAfter = Date.now().toString();
+    u.created = Date.now().toString();
+    u.updated = Date.now().toString();
+
+    const newUser = await this.userRepository.insertUser(u);
 
     return {
       ...newUser,
@@ -154,14 +156,16 @@ class UserService implements Service {
    * @returns A single, newly updated user
    */
   async modifyUser(id: string, user: Partial<User>) {
-    if (user.password) {
-      user.salt = await genSalt(24, config.PASSWORD_PEEPER);
-      user.password = await generatePassword(user.password, user.salt);
-      user.changedPasswordAfter = Date.now().toString();
+    const u = { ...user };
+
+    if (u.password) {
+      u.salt = await genSalt(24, config.PASSWORD_PEEPER);
+      u.password = await generatePassword(u.password, u.salt);
+      u.changedPasswordAfter = Date.now().toString();
     }
 
-    user.updated = Date.now().toString();
-    const updatedUser = await this.userRepository.updateUser(id, user);
+    u.updated = Date.now().toString();
+    const updatedUser = await this.userRepository.updateUser(id, u);
 
     return {
       ...updatedUser,
