@@ -6,6 +6,7 @@ import type { Repository } from './domain';
  * Authentication repository.
  */
 class AuthRepository implements Repository {
+  private readonly sessionPrefix = 'sess';
   private redis: WrappedNodeRedisClient;
 
   constructor(redis: WrappedNodeRedisClient) {
@@ -21,7 +22,11 @@ class AuthRepository implements Repository {
    * @param sessionKey - A session key
    */
   async insertToSession(userId: string, sessionKey: string) {
-    await this.redis.setex(`sess:${sessionKey}`, 86400, userId);
+    await this.redis.setex(
+      `${this.sessionPrefix}:${sessionKey}`,
+      86400,
+      userId
+    );
   }
 
   /**
@@ -31,7 +36,7 @@ class AuthRepository implements Repository {
    * @returns User's ID if it exists, else returns null
    */
   async getFromSession(sessionKey: string) {
-    return this.redis.get(`sess:${sessionKey}`);
+    return this.redis.get(`${this.sessionPrefix}:${sessionKey}`);
   }
 
   /**
@@ -40,7 +45,7 @@ class AuthRepository implements Repository {
    * @param sessionKey - A session key
    */
   async removeFromSession(sessionKey: string) {
-    await this.redis.del(`sess:${sessionKey}`);
+    await this.redis.del(`${this.sessionPrefix}:${sessionKey}`);
   }
 }
 

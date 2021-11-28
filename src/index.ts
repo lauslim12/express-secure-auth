@@ -54,7 +54,7 @@ async function startServer() {
     server.close(async () => {
       await redis.quit();
 
-      console.log('Server closed successfully!');
+      console.log("Server closed from 'SIGQUIT' signal successfully!");
       process.exit(0);
     });
   });
@@ -68,7 +68,7 @@ async function startServer() {
     server.close(async () => {
       await redis.quit();
 
-      console.log('Server closed successfully!');
+      console.log("Server closed from 'SIGTERM' signal successfully!");
       process.exit(0);
     });
   });
@@ -82,7 +82,7 @@ async function startServer() {
     server.close(async () => {
       await redis.quit();
 
-      console.log('Server closed successfully!');
+      console.log("Server closed from 'SIGINT' signal successfully!");
       process.exit(0);
     });
   });
