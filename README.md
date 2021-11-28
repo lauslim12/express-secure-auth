@@ -48,6 +48,8 @@ This API will prevent:
 - Brute-force attacks is prevented, as this API uses a strict rate-limiter and slow-down with Redis.
 - Session hijacking, as this API uses a strict session token generation algorithm (JWT with strict claims and NanoID). All of the session data are stored in the server-side.
 - Injection, as Redis is not an SQL and it has no concept of string escaping. The protocol uses prefixed-length strings and is completely binary safe.
+- XST, as this API rejects non-standard HTTP methods.
+- Bad inputs, as this API validates almost everything and will reject invalid data (bad JSON, JSON too large, etc).
 
 Technically, DDoS-ing and stuff may still work, but the rate limiter and throttler will prevent it to the best of its ability. Guessing passwords is almost impossible as the passwords are hashed with either Argon2, BCRYPT, PBKDF2, SCRYPT, or HMAC-SHA512 with a strong randomized salt and peeper. To try to brute-force itself would be outright impossible as the API implements strict rate-limiters (unless you are using a large botnet whose IPs originate from different countries, which is a federal crime if you're installing malwares in other people's machine).
 
