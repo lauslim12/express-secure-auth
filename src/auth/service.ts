@@ -44,7 +44,7 @@ const generateJWT = async (
       }
 
       if (!decoded) {
-        return reject('Invalid signing problem detected.');
+        return reject(new Error('Invalid signing problem detected!'));
       }
 
       return resolve(decoded);
