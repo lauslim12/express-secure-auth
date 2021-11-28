@@ -73,6 +73,9 @@ Redis is used for this experiment.
 - `user:{id}` is a hash to store the data of a user.
 - `username-uid` is a hash to keep track of unique keys - a linkage between `username` and `userId`.
 - `sess:{sessionKey}` is a key value type in order to keep track of sessions. Key is a randomly generated session key, and the value is the user identification (user ID). Has an expiry time of 24 hours, same as the expiry time of the JWT.
+- `rl-common::{ip}` is a key value set to calculate rate limiters for common endpoints.
+- `rl-sensitive::{ip}` is a key value set to calculate rate limiters for sensitive endpoints.
+- `sd-common::{ip}` is a key value set to calculate throttler for endpoints.
 
 ## Features
 
@@ -189,13 +192,14 @@ From this experiment, I conclude:
 - Checking all JSON Web Tokens's claims (`iat`, `nbf`, `sub`, `iss`, `aud`, `jti`, even extra payload like `sess` in this experiment) can be an effective deterrent for an attacker. Creating a valid JWT token from nothingness is already a hard task by itself. I believe this is somewhat safer than ordinary sessions.
 - Forcing a user to login again after they have changed passwords seemed like a good security measure - also a good choice to refresh tokens.
 - From storage standpoint, `sess:*` key-value pairs will probably not cause any problems as it has a TTL of 24 hours. After that, it's gone.
-- Using rate limiters is a good deterrent for an attacker.
+- Using rate limiters and 'slow downs' / throttlers is a good deterrent for an attacker.
 - Redis is fast and definitely a good choice for authentication processes. Even if used as an ordinary database, Redis is still excellent in terms of data structure (tidiness of the data) and performance.
 
 ## Further Experiments
 
 - Try to explore more password algorithms.
 - Try to implement JWT with a public-private key pairs with ECDSA.
+- Try to explore a different programming style: instead of classes for interfaces, maybe try functions?
 - Create more unit tests.
 
 ## License
