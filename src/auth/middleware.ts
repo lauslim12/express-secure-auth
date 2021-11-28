@@ -6,7 +6,6 @@ import jwt from 'jsonwebtoken';
 import config from '../config';
 import UserService from '../user/service';
 import AppError from '../util/appError';
-import asyncHandler from '../util/asyncHandler';
 import AuthService from './service';
 
 /**
@@ -75,113 +74,103 @@ class AuthMiddleware {
   /**
    * Performs validation of a user before allowing him/her to access the protected endpoint.
    */
-  restrict = asyncHandler(
-    async (req: Request, _: Response, next: NextFunction) => {
-      // check authorization header
-      const validHeader = req.headers.authorization?.startsWith('Bearer ');
-      const token = validHeader
-        ? req.headers.authorization?.split(' ')[1]
-        : null;
-      if (!token) {
-        next(new AppError('Invalid bearer token!', 400));
-        return;
-      }
-
-      // validate JWT, check if it has 'session' payload
-      const verifiedToken = await verifyToken(token);
-      if (!verifiedToken.sess || !verifiedToken.iat) {
-        next(new AppError('Invalid JWT payload!', 400));
-        return;
-      }
-
-      // verify session key in stateful datastore
-      const userId = await this.authService.getFromSession(verifiedToken.sess);
-      if (!userId) {
-        next(
-          new AppError('Session bearing this JWT token does not exist!', 401)
-        );
-        return;
-      }
-
-      // verify whether the user with the previously retrieved user id exists or not
-      const loggedUser = await this.userService.getUserComplete(userId);
-      if (!loggedUser) {
-        next(new AppError('User bearing this JWT token does not exist!', 401));
-        return;
-      }
-
-      // verify whether the user has recently changed passwords or not
-      const timeChangedPassword = Math.floor(
-        parseInt(loggedUser.changedPasswordAfter, 10) / 1000
-      );
-      if (timeChangedPassword > verifiedToken.iat) {
-        next(
-          new AppError(
-            'User bearing this token has recently changed passwords!',
-            401
-          )
-        );
-        return;
-      }
-
-      // continue next and place 'userid' and 'sessionId' in request variable
-      req.userId = loggedUser.id;
-      req.sessionKey = verifiedToken.sess;
-      next();
+  async restrict(req: Request, _: Response, next: NextFunction) {
+    // check authorization header
+    const validHeader = req.headers.authorization?.startsWith('Bearer ');
+    const token = validHeader ? req.headers.authorization?.split(' ')[1] : null;
+    if (!token) {
+      next(new AppError('Invalid bearer token!', 400));
+      return;
     }
-  );
+
+    // validate JWT, check if it has 'session' payload
+    const verifiedToken = await verifyToken(token);
+    if (!verifiedToken.sess || !verifiedToken.iat) {
+      next(new AppError('Invalid JWT payload!', 400));
+      return;
+    }
+
+    // verify session key in stateful datastore
+    const userId = await this.authService.getFromSession(verifiedToken.sess);
+    if (!userId) {
+      next(new AppError('Session bearing this JWT token does not exist!', 401));
+      return;
+    }
+
+    // verify whether the user with the previously retrieved user id exists or not
+    const loggedUser = await this.userService.getUserComplete(userId);
+    if (!loggedUser) {
+      next(new AppError('User bearing this JWT token does not exist!', 401));
+      return;
+    }
+
+    // verify whether the user has recently changed passwords or not
+    const timeChangedPassword = Math.floor(
+      parseInt(loggedUser.changedPasswordAfter, 10) / 1000
+    );
+    if (timeChangedPassword > verifiedToken.iat) {
+      next(
+        new AppError(
+          'User bearing this token has recently changed passwords!',
+          401
+        )
+      );
+      return;
+    }
+
+    // continue next and place 'userid' and 'sessionId' in request variable
+    req.userId = loggedUser.id;
+    req.sessionKey = verifiedToken.sess;
+    next();
+  }
 
   /**
    * Performs input validation for logging in on the request body.
    */
-  validateLogin = asyncHandler(
-    async (req: Request, _: Response, next: NextFunction) => {
-      const result = authLoginSchema.validate(req.body, {
-        abortEarly: true,
-        stripUnknown: true,
-      });
+  validateLogin(req: Request, _: Response, next: NextFunction) {
+    const result = authLoginSchema.validate(req.body, {
+      abortEarly: true,
+      stripUnknown: true,
+    });
 
-      if (result.error) {
-        next(
-          new AppError(
-            `Validation error: ${result.error.details
-              .map((e) => e.message)
-              .join(', ')}`,
-            400
-          )
-        );
-        return;
-      }
-
-      next();
+    if (result.error) {
+      next(
+        new AppError(
+          `Validation error: ${result.error.details
+            .map((e) => e.message)
+            .join(', ')}`,
+          400
+        )
+      );
+      return;
     }
-  );
+
+    next();
+  }
 
   /**
    * Performs input validation for registration on the request body.
    */
-  validateRegistration = asyncHandler(
-    async (req: Request, _: Response, next: NextFunction) => {
-      const result = authRegistrationSchema.validate(req.body, {
-        abortEarly: true,
-        stripUnknown: true,
-      });
+  validateRegistration(req: Request, _: Response, next: NextFunction) {
+    const result = authRegistrationSchema.validate(req.body, {
+      abortEarly: true,
+      stripUnknown: true,
+    });
 
-      if (result.error) {
-        next(
-          new AppError(
-            `Validation error: ${result.error.details
-              .map((e) => e.message)
-              .join(', ')}`,
-            400
-          )
-        );
-        return;
-      }
-
-      next();
+    if (result.error) {
+      next(
+        new AppError(
+          `Validation error: ${result.error.details
+            .map((e) => e.message)
+            .join(', ')}`,
+          400
+        )
+      );
+      return;
     }
-  );
+
+    next();
+  }
 }
 
 export default AuthMiddleware;
