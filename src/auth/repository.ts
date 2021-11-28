@@ -31,7 +31,7 @@ class AuthRepository implements Repository {
    * @returns User's ID if it exists, else returns null
    */
   async getFromSession(sessionKey: string) {
-    return await this.redis.get(`sess:${sessionKey}`);
+    return this.redis.get(`sess:${sessionKey}`);
   }
 
   /**

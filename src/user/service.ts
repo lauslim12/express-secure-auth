@@ -22,19 +22,19 @@ import type { Repository, Service, User } from './domain';
 const generatePassword = async (raw: string, salt: string) => {
   const { PASSWORD_ALGORITHM: algorithm } = config;
   if (algorithm === 'argon2') {
-    return await createArgon2Hash(raw);
+    return createArgon2Hash(raw);
   }
 
   if (algorithm === 'bcrypt') {
-    return await createBCRYPTHash(raw);
+    return createBCRYPTHash(raw);
   }
 
   if (algorithm === 'pbkdf2') {
-    return await createPBKDF2Hash(raw, salt, 'sha512', 1000000, 64);
+    return createPBKDF2Hash(raw, salt, 'sha512', 1000000, 64);
   }
 
   if (algorithm === 'scrypt') {
-    return await createSCRYPTHash(raw, salt, 64);
+    return createSCRYPTHash(raw, salt, 64);
   }
 
   return createSHA512HMAC(raw, salt);
