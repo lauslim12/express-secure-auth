@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
-import joi from 'joi';
 
 import AppError from '../util/appError';
+import joi from '../util/joi';
 
 /**
  * Schema type for user creations.
@@ -31,10 +31,7 @@ class UserMiddleware {
    * Validates a request before throwing it to the appropriate handler.
    */
   validateCreate(req: Request, _: Response, next: NextFunction) {
-    const validationResult = userCreateSchema.validate(req.body, {
-      abortEarly: true,
-      stripUnknown: true,
-    });
+    const validationResult = userCreateSchema.validate(req.body);
 
     if (validationResult.error) {
       next(
@@ -54,10 +51,7 @@ class UserMiddleware {
    * Validates a request for user updates.
    */
   validateUpdate(req: Request, _: Response, next: NextFunction) {
-    const validationResult = userUpdateSchema.validate(req.body, {
-      abortEarly: true,
-      stripUnknown: true,
-    });
+    const validationResult = userUpdateSchema.validate(req.body);
 
     if (validationResult.error) {
       next(

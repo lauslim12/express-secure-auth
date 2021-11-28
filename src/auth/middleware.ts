@@ -1,11 +1,11 @@
 import type { NextFunction, Request, Response } from 'express';
-import joi from 'joi';
 import type { JwtPayload, VerifyOptions } from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 
 import config from '../config';
 import UserService from '../user/service';
 import AppError from '../util/appError';
+import joi from '../util/joi';
 import AuthService from './service';
 
 /**
@@ -128,10 +128,7 @@ class AuthMiddleware {
    * Performs input validation for logging in on the request body.
    */
   validateLogin(req: Request, _: Response, next: NextFunction) {
-    const result = authLoginSchema.validate(req.body, {
-      abortEarly: true,
-      stripUnknown: true,
-    });
+    const result = authLoginSchema.validate(req.body);
 
     if (result.error) {
       next(
@@ -152,10 +149,7 @@ class AuthMiddleware {
    * Performs input validation for registration on the request body.
    */
   validateRegistration(req: Request, _: Response, next: NextFunction) {
-    const result = authRegistrationSchema.validate(req.body, {
-      abortEarly: true,
-      stripUnknown: true,
-    });
+    const result = authRegistrationSchema.validate(req.body);
 
     if (result.error) {
       next(
