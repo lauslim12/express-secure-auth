@@ -10,12 +10,10 @@ import { timingSafeEqual } from 'crypto';
  */
 const safeCompare = (a: string, b: string) => {
   try {
-    const equal = timingSafeEqual(
+    return timingSafeEqual(
       Buffer.from(a.normalize()),
       Buffer.from(b.normalize())
     );
-
-    return equal;
   } catch {
     return false;
   }

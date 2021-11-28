@@ -57,14 +57,13 @@ class UserService implements Service {
    */
   async getUsers() {
     const users = await this.userRepository.fetchUsers();
-    const strippedUsers = users.map((user) => ({
+
+    return users.map((user) => ({
       ...user,
       password: undefined,
       salt: undefined,
       changedPasswordAfter: undefined,
     }));
-
-    return strippedUsers;
   }
 
   /**
