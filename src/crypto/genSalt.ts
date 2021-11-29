@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from 'crypto';
+import { createHash, randomBytes } from 'node:crypto';
 
 /**
  * Generates a random salt with size 'size'.
@@ -8,8 +8,8 @@ import { createHash, randomBytes } from 'crypto';
  * @param peeper - A secret string to be appended to the salt
  * @returns A secure-random salt for passwords
  */
-const genSalt = async (size: number, peeper: string): Promise<string> => {
-  return new Promise((resolve, reject) => {
+const genSalt = async (size: number, peeper: string): Promise<string> =>
+  new Promise((resolve, reject) => {
     randomBytes(size, (err, buf) => {
       if (err) {
         return reject(err);
@@ -21,6 +21,5 @@ const genSalt = async (size: number, peeper: string): Promise<string> => {
       return resolve(hashedSP);
     });
   });
-};
 
 export default genSalt;

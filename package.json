@@ -14,7 +14,7 @@
     "dev": "ts-node-dev src",
     "circular-check": "dpdm --tree --circular --warning ./**/*.ts",
     "format-check": "prettier --check ./**/*.ts",
-    "eslint-check": "eslint . --ext .ts",
+    "eslint-check": "eslint ./src/**/* --ext .ts",
     "type-check": "tsc --noEmit",
     "lint": "yarn format-check && yarn eslint-check && yarn type-check"
   },
@@ -54,8 +54,14 @@
     "chai": "^4.3.4",
     "dpdm": "^3.8.0",
     "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^16.0.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-security": "^1.4.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
+    "eslint-plugin-sonarjs": "^0.10.0",
+    "eslint-plugin-unicorn": "^39.0.0",
     "mocha": "^9.1.3",
     "nyc": "^15.1.0",
     "prettier": "^2.4.1",
@@ -67,19 +73,65 @@
   "eslintConfig": {
     "root": true,
     "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    },
+    "extends": [
+      "airbnb-base",
+      "airbnb-typescript/base",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:sonarjs/recommended",
+      "plugin:unicorn/recommended",
+      "plugin:security/recommended",
+      "prettier"
+    ],
     "plugins": [
-      "@typescript-eslint",
       "simple-import-sort"
     ],
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended",
-      "plugin:security/recommended"
-    ],
     "rules": {
+      "@typescript-eslint/lines-between-class-members": "off",
+      "class-methods-use-this": "off",
+      "simple-import-sort/exports": "error",
       "simple-import-sort/imports": "error",
-      "simple-import-sort/exports": "error"
-    }
+      "unicorn/catch-error-name": "off",
+      "unicorn/filename-case": [
+        "error",
+        {
+          "case": "camelCase"
+        }
+      ],
+      "unicorn/no-null": "off",
+      "unicorn/prevent-abbreviations": "off"
+    },
+    "overrides": [
+      {
+        "files": [
+          "./src/index.ts",
+          "./src/infra/**/*.ts"
+        ],
+        "rules": {
+          "no-console": "off"
+        }
+      },
+      {
+        "files": [
+          "./test/**/*.spec.ts"
+        ],
+        "rules": {
+          "prefer-arrow-callback": "off",
+          "func-names": "off",
+          "sonarjs/no-duplicate-string": "off"
+        }
+      },
+      {
+        "files": [
+          "./src/index.ts"
+        ],
+        "rules": {
+          "unicorn/prefer-module": "off"
+        }
+      }
+    ]
   },
   "prettier": {
     "singleQuote": true,

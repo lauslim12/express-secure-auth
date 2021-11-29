@@ -1,4 +1,4 @@
-import { createHmac } from 'crypto';
+import { createHmac } from 'node:crypto';
 
 /**
  * Creates a SHA-512 encrypted string with a random salt.
@@ -7,8 +7,7 @@ import { createHmac } from 'crypto';
  * @param salt - A salt, or salt + peeper for additional security
  * @returns HEX-encoded SHA-512 hashed string
  */
-const createSHA512HMAC = (raw: string, salt: string) => {
-  return createHmac('sha512', salt).update(raw.normalize()).digest('hex');
-};
+const createSHA512HMAC = (raw: string, salt: string) =>
+  createHmac('sha512', salt).update(raw.normalize()).digest('hex');
 
 export default createSHA512HMAC;

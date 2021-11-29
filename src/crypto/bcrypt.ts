@@ -6,9 +6,8 @@ import bcrypt from 'bcrypt';
  * @param raw - A raw password
  * @returns A BCRYPT hashed password
  */
-export const createBCRYPTHash = async (raw: string) => {
-  return await bcrypt.hash(raw.normalize(), 14);
-};
+export const createBCRYPTHash = async (raw: string) =>
+  bcrypt.hash(raw.normalize(), 14);
 
 /**
  * Validates a password, checks whether password is correct or not.
@@ -17,6 +16,5 @@ export const createBCRYPTHash = async (raw: string) => {
  * @param input - A plaintext password
  * @returns Boolean value whether the password is correct or not
  */
-export const verifyBCRYPTHash = async (checked: string, input: string) => {
-  return await bcrypt.compare(checked, input.normalize());
-};
+export const verifyBCRYPTHash = async (checked: string, input: string) =>
+  bcrypt.compare(checked, input.normalize());

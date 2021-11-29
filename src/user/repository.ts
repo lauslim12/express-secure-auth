@@ -6,6 +6,9 @@ import type { Repository, User } from './domain';
  * Personification of a DAO in Data Access Layer.
  */
 class UserRepository implements Repository {
+  private readonly usersSet = 'users';
+  private readonly userHash = 'user';
+  private readonly usernameAndUserId = 'username-uid';
   private redis: WrappedNodeRedisClient;
 
   constructor(redis: WrappedNodeRedisClient) {
@@ -18,9 +21,9 @@ class UserRepository implements Repository {
    * @returns All users data
    */
   async fetchUsers() {
-    const userIds = await this.redis.smembers('users');
+    const userIds = await this.redis.smembers(this.usersSet);
     const users = await Promise.all(
-      userIds.map((id) => this.redis.hgetall(`user:${id}`))
+      userIds.map((id) => this.redis.hgetall(`${this.userHash}:${id}`))
     );
 
     return users as User[];
@@ -33,7 +36,7 @@ class UserRepository implements Repository {
    * @returns A single user's data or null if it does not exists
    */
   async fetchUser(id: string) {
-    const user = await this.redis.hgetall(`user:${id}`);
+    const user = await this.redis.hgetall(`${this.userHash}:${id}`);
     if (!user) {
       return null;
     }
@@ -48,8 +51,8 @@ class UserRepository implements Repository {
    * @returns A single user's data or null if it does not exists
    */
   async fetchUserByUsername(username: string) {
-    const userId = await this.redis.hget('username-uid', username);
-    const user = await this.redis.hgetall(`user:${userId}`);
+    const userId = await this.redis.hget(this.usernameAndUserId, username);
+    const user = await this.redis.hgetall(`${this.userHash}:${userId}`);
     if (!user) {
       return null;
     }
@@ -65,9 +68,9 @@ class UserRepository implements Repository {
    */
   async insertUser(user: User) {
     await Promise.all([
-      this.redis.sadd('users', user.id),
-      this.redis.hset(`user:${user.id}`, ...Object.entries(user)),
-      this.redis.hset('username-uid', [user.username, user.id]),
+      this.redis.sadd(this.usersSet, user.id),
+      this.redis.hset(`${this.userHash}:${user.id}`, ...Object.entries(user)),
+      this.redis.hset(this.usernameAndUserId, [user.username, user.id]),
     ]);
 
     return user as User;
@@ -85,13 +88,16 @@ class UserRepository implements Repository {
     const previousUser = (await this.redis.hgetall(`user:${id}`)) as User;
     if (user.username) {
       await Promise.all([
-        this.redis.hdel('username-uid', previousUser.username),
-        this.redis.hset('username-uid', [user.username, previousUser.id]),
+        this.redis.hdel(this.usernameAndUserId, previousUser.username),
+        this.redis.hset(this.usernameAndUserId, [
+          user.username,
+          previousUser.id,
+        ]),
       ]);
     }
 
-    await this.redis.hset(`user:${id}`, ...Object.entries(user));
-    const updatedUser = await this.redis.hgetall(`user:${id}`);
+    await this.redis.hset(`${this.userHash}:${id}`, ...Object.entries(user));
+    const updatedUser = await this.redis.hgetall(`${this.userHash}:${id}`);
 
     return updatedUser as User;
   }
@@ -103,15 +109,18 @@ class UserRepository implements Repository {
    * @returns None, as deletion is 204 No Content
    */
   async deleteUser(id: string) {
-    const username = await this.redis.hget(`user:${id}`, 'username');
+    const username = await this.redis.hget(
+      `${this.userHash}:${id}`,
+      'username'
+    );
     if (!username) {
       return;
     }
 
     await Promise.all([
-      this.redis.srem('users', id),
-      this.redis.del(`user:${id}`),
-      this.redis.hdel('username-uid', username),
+      this.redis.srem(this.usersSet, id),
+      this.redis.del(`${this.userHash}:${id}`),
+      this.redis.hdel(this.usernameAndUserId, username),
     ]);
   }
 }

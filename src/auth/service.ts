@@ -28,7 +28,7 @@ const generateJWT = async (
     algorithm: 'HS256',
     audience: 'if673-general-population',
     issuer: 'esa-nhy',
-    expiresIn: 86400,
+    expiresIn: 86_400,
     subject: username,
     notBefore: 0,
   };
@@ -44,7 +44,7 @@ const generateJWT = async (
       }
 
       if (!decoded) {
-        return reject('Invalid signing problem detected.');
+        return reject(new Error('Invalid signing problem detected!'));
       }
 
       return resolve(decoded);
@@ -67,19 +67,19 @@ const comparePasswords = async (
 ) => {
   const { PASSWORD_ALGORITHM: algorithm } = config;
   if (algorithm === 'argon2') {
-    return await verifyArgon2Hash(checked, input);
+    return verifyArgon2Hash(checked, input);
   }
 
   if (algorithm === 'bcrypt') {
-    return await verifyBCRYPTHash(checked, input);
+    return verifyBCRYPTHash(checked, input);
   }
 
   if (algorithm === 'pbkdf2') {
-    return await verifyPBKDF2(checked, salt, input);
+    return verifyPBKDF2(checked, salt, input);
   }
 
   if (algorithm === 'scrypt') {
-    return await verifySCRYPTHash(checked, salt, input);
+    return verifySCRYPTHash(checked, salt, input);
   }
 
   const passwordInput = createSHA512HMAC(input, salt);

@@ -71,7 +71,7 @@ const AuthHandler = (
    */
   handler.post(
     '/logout',
-    authMiddleware.restrict,
+    asyncHandler(authMiddleware.restrict),
     asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
       if (!req.sessionKey) {
         next(new AppError('Session key does not exist!', 400));

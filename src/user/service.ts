@@ -22,19 +22,19 @@ import type { Repository, Service, User } from './domain';
 const generatePassword = async (raw: string, salt: string) => {
   const { PASSWORD_ALGORITHM: algorithm } = config;
   if (algorithm === 'argon2') {
-    return await createArgon2Hash(raw);
+    return createArgon2Hash(raw);
   }
 
   if (algorithm === 'bcrypt') {
-    return await createBCRYPTHash(raw);
+    return createBCRYPTHash(raw);
   }
 
   if (algorithm === 'pbkdf2') {
-    return await createPBKDF2Hash(raw, salt, 'sha512', 1000000, 64);
+    return createPBKDF2Hash(raw, salt, 'sha512', 1_000_000, 64);
   }
 
   if (algorithm === 'scrypt') {
-    return await createSCRYPTHash(raw, salt, 64);
+    return createSCRYPTHash(raw, salt, 64);
   }
 
   return createSHA512HMAC(raw, salt);
@@ -57,14 +57,13 @@ class UserService implements Service {
    */
   async getUsers() {
     const users = await this.userRepository.fetchUsers();
-    const strippedUsers = users.map((user) => ({
+
+    return users.map((user) => ({
       ...user,
       password: undefined,
       salt: undefined,
       changedPasswordAfter: undefined,
     }));
-
-    return strippedUsers;
   }
 
   /**
@@ -129,14 +128,16 @@ class UserService implements Service {
    * @returns A single newly created user
    */
   async createUser(user: User) {
-    user.id = await nanoid();
-    user.salt = await genSalt(24, config.PASSWORD_PEEPER);
-    user.password = await generatePassword(user.password, user.salt);
-    user.changedPasswordAfter = Date.now().toString();
-    user.created = Date.now().toString();
-    user.updated = Date.now().toString();
+    const u = { ...user };
 
-    const newUser = await this.userRepository.insertUser(user);
+    u.id = await nanoid();
+    u.salt = await genSalt(24, config.PASSWORD_PEEPER);
+    u.password = await generatePassword(user.password, user.salt);
+    u.changedPasswordAfter = Date.now().toString();
+    u.created = Date.now().toString();
+    u.updated = Date.now().toString();
+
+    const newUser = await this.userRepository.insertUser(u);
 
     return {
       ...newUser,
@@ -154,14 +155,16 @@ class UserService implements Service {
    * @returns A single, newly updated user
    */
   async modifyUser(id: string, user: Partial<User>) {
-    if (user.password) {
-      user.salt = await genSalt(24, config.PASSWORD_PEEPER);
-      user.password = await generatePassword(user.password, user.salt);
-      user.changedPasswordAfter = Date.now().toString();
+    const u = { ...user };
+
+    if (u.password) {
+      u.salt = await genSalt(24, config.PASSWORD_PEEPER);
+      u.password = await generatePassword(u.password, u.salt);
+      u.changedPasswordAfter = Date.now().toString();
     }
 
-    user.updated = Date.now().toString();
-    const updatedUser = await this.userRepository.updateUser(id, user);
+    u.updated = Date.now().toString();
+    const updatedUser = await this.userRepository.updateUser(id, u);
 
     return {
       ...updatedUser,

@@ -61,7 +61,7 @@ const UserHandler = (
    */
   handler.post(
     '/',
-    authMiddleware.restrict,
+    asyncHandler(authMiddleware.restrict),
     userMiddleware.validateCreate,
     asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
       if (await userService.getUserByUsername(req.body.username)) {
@@ -84,7 +84,7 @@ const UserHandler = (
    */
   handler.put(
     '/:id',
-    authMiddleware.restrict,
+    asyncHandler(authMiddleware.restrict),
     userMiddleware.validateUpdate,
     asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
       const checkedUser = await userService.getUser(req.params.id as string);
@@ -113,7 +113,7 @@ const UserHandler = (
    */
   handler.delete(
     '/:id',
-    authMiddleware.restrict,
+    asyncHandler(authMiddleware.restrict),
     asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
       const checkedUser = await userService.getUser(req.params.id as string);
       if (!checkedUser) {
