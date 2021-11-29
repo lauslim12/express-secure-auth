@@ -74,7 +74,7 @@ class AuthMiddleware {
   /**
    * Performs validation of a user before allowing him/her to access the protected endpoint.
    */
-  async restrict(req: Request, _: Response, next: NextFunction) {
+  restrict = async (req: Request, _: Response, next: NextFunction) => {
     // check authorization header
     const validHeader = req.headers.authorization?.startsWith('Bearer ');
     const token = validHeader ? req.headers.authorization?.split(' ')[1] : null;
@@ -122,12 +122,12 @@ class AuthMiddleware {
     req.userId = loggedUser.id;
     req.sessionKey = verifiedToken.sess;
     next();
-  }
+  };
 
   /**
    * Performs input validation for logging in on the request body.
    */
-  validateLogin(req: Request, _: Response, next: NextFunction) {
+  validateLogin = (req: Request, _: Response, next: NextFunction) => {
     const result = authLoginSchema.validate(req.body);
 
     if (result.error) {
@@ -143,12 +143,12 @@ class AuthMiddleware {
     }
 
     next();
-  }
+  };
 
   /**
    * Performs input validation for registration on the request body.
    */
-  validateRegistration(req: Request, _: Response, next: NextFunction) {
+  validateRegistration = (req: Request, _: Response, next: NextFunction) => {
     const result = authRegistrationSchema.validate(req.body);
 
     if (result.error) {
@@ -164,7 +164,7 @@ class AuthMiddleware {
     }
 
     next();
-  }
+  };
 }
 
 export default AuthMiddleware;

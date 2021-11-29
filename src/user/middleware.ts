@@ -30,7 +30,7 @@ class UserMiddleware {
   /**
    * Validates a request before throwing it to the appropriate handler.
    */
-  validateCreate(req: Request, _: Response, next: NextFunction) {
+  validateCreate = (req: Request, _: Response, next: NextFunction) => {
     const validationResult = userCreateSchema.validate(req.body);
 
     if (validationResult.error) {
@@ -45,12 +45,12 @@ class UserMiddleware {
     }
 
     next();
-  }
+  };
 
   /**
    * Validates a request for user updates.
    */
-  validateUpdate(req: Request, _: Response, next: NextFunction) {
+  validateUpdate = (req: Request, _: Response, next: NextFunction) => {
     const validationResult = userUpdateSchema.validate(req.body);
 
     if (validationResult.error) {
@@ -65,7 +65,7 @@ class UserMiddleware {
     }
 
     next();
-  }
+  };
 }
 
 export default UserMiddleware;
