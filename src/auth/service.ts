@@ -28,7 +28,7 @@ const generateJWT = async (
     algorithm: 'HS256',
     audience: 'if673-general-population',
     issuer: 'esa-nhy',
-    expiresIn: 86400,
+    expiresIn: 86_400,
     subject: username,
     notBefore: 0,
   };

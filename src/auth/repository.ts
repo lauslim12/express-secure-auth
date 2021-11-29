@@ -24,7 +24,7 @@ class AuthRepository implements Repository {
   async insertToSession(userId: string, sessionKey: string) {
     await this.redis.setex(
       `${this.sessionPrefix}:${sessionKey}`,
-      86400,
+      86_400,
       userId
     );
   }

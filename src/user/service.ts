@@ -30,7 +30,7 @@ const generatePassword = async (raw: string, salt: string) => {
   }
 
   if (algorithm === 'pbkdf2') {
-    return createPBKDF2Hash(raw, salt, 'sha512', 1000000, 64);
+    return createPBKDF2Hash(raw, salt, 'sha512', 1_000_000, 64);
   }
 
   if (algorithm === 'scrypt') {
