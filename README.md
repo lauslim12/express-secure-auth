@@ -183,6 +183,14 @@ sh scripts/test.sh
 docker-compose down
 ```
 
+## Codebase
+
+Code was linted with Airbnb style (combined with TypeScript ESLint), complemented with ESLint plugins: Unicorn, SonarJS, Simple Import Sort, and Security. Please run `yarn lint` to run formatters, linters, and type-checkers.
+
+## Updates
+
+You may run `yarn upgrade-interactive --latest` to upgrade all dependencies.
+
 ## Results
 
 From this experiment, I conclude:
