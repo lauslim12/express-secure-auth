@@ -14,7 +14,7 @@
     "dev": "ts-node-dev src",
     "circular-check": "dpdm --tree --circular --warning ./**/*.ts",
     "format-check": "prettier --check ./**/*.ts",
-    "eslint-check": "eslint . --ext .ts",
+    "eslint-check": "eslint ./src/**/* --ext .ts",
     "type-check": "tsc --noEmit",
     "lint": "yarn format-check && yarn eslint-check && yarn type-check"
   },
