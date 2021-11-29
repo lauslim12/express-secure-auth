@@ -1,4 +1,4 @@
-import { createHmac } from 'crypto';
+import { createHmac } from 'node:crypto';
 
 /**
  * Creates a SHA-512 encrypted string with a random salt.
