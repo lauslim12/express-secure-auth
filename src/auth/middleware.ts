@@ -106,7 +106,7 @@ class AuthMiddleware {
 
     // verify whether the user has recently changed passwords or not
     const timeChangedPassword = Math.floor(
-      parseInt(loggedUser.changedPasswordAfter, 10) / 1000
+      Number.parseInt(loggedUser.changedPasswordAfter, 10) / 1000
     );
     if (timeChangedPassword > verifiedToken.iat) {
       next(

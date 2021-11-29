@@ -1,4 +1,4 @@
-import { scrypt } from 'crypto';
+import { scrypt } from 'node:crypto';
 
 import safeCompare from './safeCompare';
 
@@ -42,7 +42,7 @@ export const verifySCRYPTHash = async (
 ) => {
   // will always fail is passing undefined inputs
   const pieces = checked.split('$');
-  const keyLength = parseInt(pieces[2] || '1', 10);
+  const keyLength = Number.parseInt(pieces[2] || '1', 10);
   const hash = pieces[3] || '';
 
   const userSCRPYT = await createSCRYPTHash(input, salt, keyLength);

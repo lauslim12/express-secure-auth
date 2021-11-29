@@ -1,4 +1,4 @@
-import { pbkdf2 } from 'crypto';
+import { pbkdf2 } from 'node:crypto';
 
 import safeCompare from './safeCompare';
 
@@ -49,8 +49,8 @@ export const verifyPBKDF2 = async (
   // will always fail if passing undefined inputs
   const pieces = checked.split('$');
   const digest = pieces[2] || 'sha512';
-  const iterations = parseInt(pieces[3] || '1', 10);
-  const keyLength = parseInt(pieces[4] || '1', 10);
+  const iterations = Number.parseInt(pieces[3] || '1', 10);
+  const keyLength = Number.parseInt(pieces[4] || '1', 10);
   const hash = pieces[5] || '';
 
   const userPBKDF2 = await createPBKDF2Hash(
