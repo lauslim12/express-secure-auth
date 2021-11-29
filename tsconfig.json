@@ -33,7 +33,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["./src/**/*.ts"],
+  "include": ["./src/**/*.ts", "./test/**/*.spec.ts"],
   "files": ["./src/extensions.d.ts"],
   "exclude": ["node_modules"]
 }
