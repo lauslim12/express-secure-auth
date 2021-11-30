@@ -208,6 +208,7 @@ From this experiment, I conclude:
 - Try to explore more password algorithms.
 - Try to implement JWT with a public-private key pairs with ECDSA.
 - Try to explore a different programming style: instead of classes for interfaces, maybe try functions?
+- Maybe try to explore more edge cases?
 - Create more unit tests.
 
 ## License
